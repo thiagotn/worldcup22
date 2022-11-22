@@ -1,14 +1,25 @@
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:http/http.dart' as http;
 import 'package:tabler/tabler.dart';
 import 'package:worldcup22/match.dart';
 
 Future<void> showData() async {
-  String data = await File('data.json').readAsString();
-  final List t = json.decode(data);
-  final List<Match> matches = t.map((item) => Match.fromJson(item)).toList();
+  var url = Uri.https('fixturedownload.com', '/feed/json/fifa-world-cup-2022',
+      {'q': '{https}'});
 
+  var response = await http.get(url);
+  print("Fetching data...\n\n");
+  if (response.statusCode == 200) {
+    final List t = json.decode(response.body);
+    final List<Match> matches = t.map((item) => Match.fromJson(item)).toList();
+    showDataTable(matches);
+  } else {
+    print('Request failed with status: ${response.statusCode}.');
+  }
+}
+
+void showDataTable(List<Match> matches) {
   List<List<dynamic>> dataTable = List.filled(matches.length, []);
   for (var i = 0; i < matches.length; i++) {
     dataTable[i] = [
@@ -31,9 +42,9 @@ Future<void> showData() async {
     'Home',
     'X',
     'Away',
-    'Stadium'
+    'Stadium',
   ];
-  var t2 = Tabler(
+  var table = Tabler(
     data: dataTable,
     header: header,
     style: TablerStyle(
@@ -45,5 +56,5 @@ Future<void> showData() async {
     ),
   );
 
-  print(t2);
+  print(table);
 }
