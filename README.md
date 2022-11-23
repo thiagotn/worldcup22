@@ -5,6 +5,12 @@ in `lib/`, and example unit test in `test/`.
 
 ## How to run?
 
+Required: 
+
+```shell
+dart >=2.18.2 <3.0.0
+```
+
 Clone this repo and:
 
 ```dart
